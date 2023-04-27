@@ -26,22 +26,17 @@ class Here:
     """
 
     def __init__(self, project_dir:str) -> None:
-        top = str(project_dir).replace("\\", "/").replace("/", "").lstrip(".")
+        top = str(project_dir).replace("\\", "/").replace("/", "").lstrip(".")            
         cwd = Path().cwd().as_posix().split("/")
         assert top in cwd, \
             "Top directory not found in working path. Ensure that 'top_directory' is an existing directory."
-        pth = []
-        i = 0
-        while (cwd[i] != top):
-            pth.append(cwd[i]) 
-            i += 1
-        pth.append(top)
-        self.root = Path("/".join(pth))
-    
-    def here(self, path:str, as_string=False):
+        self.root = Path('/'.join(cwd[0 : cwd.index(top) + 1]))
+        
+    def here(self, path:str="", as_string=False):
         """Get the absolute path to the target file or folder within your project directory.
 
-        :param target: the relative path from the project directory to the target folder or file.
+        :param target: The relative path from the project directory to the target folder or file.
+            If not provided, returns the absolute path to the root directory.
         :param type: str
         :param as_string: Default False. If True, return the path as a string and not as a pathlib.Path instance.
         :param type: bool

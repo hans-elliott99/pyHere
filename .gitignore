@@ -1,2 +1,10 @@
-.venv
+# sphinx
 docs
+# distribution
+dist
+*.egg-info
+
+# other
+__pycache__
+local
+.venv
