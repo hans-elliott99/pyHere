@@ -1,0 +1,88 @@
+:py:mod:`therepy.here`
+======================
+
+.. py:module:: therepy.here
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   therepy.here.Here
+
+
+
+
+.. py:class:: Here(project_dir, **kwargs)
+
+   Simplify filepath management throughout your project.
+   Create an instance of Here and specify the name of the root directory so
+   that Here knows where your project starts.
+   Use Here.here("path/from/inside/root") to get the absolute path to a file
+   or folder inside your root directory.
+   therepy.Here is built on python's pathlib module, and can be set to return
+   pathlib.Path instances instead of strings.
+
+   :param project_dir: The name of the root directory for your project.
+   :type project_dir: str
+   :param \*\*kwargs: Default parameters, such as the return type, can be set at
+                      initialization. Refer to documentation for a list of all possible
+                      arguments.
+   :type \*\*kwargs: dict, optional
+
+   .. rubric:: Examples
+
+   >>> from therepy import Here
+   >>> here = Here(project_dir = "my_project")
+   >>> here.here("folder_1/dataset1.csv")
+   "C:/users/ExampleUser/Documents/my_project/folder_1/dataset1.csv"
+
+   By default, Here.here returns strings. That behavior can be overwritten at
+   initialization or in downstream methods.
+
+   >>> here = Here("my_project", as_path = True)
+   >>> here.here()
+   WindowsPath("C:/users/ExampleUser/Documents/my_project")
+   >>> here.here("my_project", as_str = True)
+   "C:/users/ExampleUser/Documents/my_project"
+
+   .. py:method:: here(*relative_path, **kwargs)
+
+      Get the absolute path to a file/folder within the project directory.
+
+      :param \*relative_path: The relative path from the root/project directory to the target
+                              file or folder. Can be concatenated as one string, or each
+                              folder/file can be listed separately (as a variable length
+                              positional). If not provided, the absolute path to the root
+                              directory will be returned.
+      :type \*relative_path: str or tuple of str
+      :param \*\*kwargs: Default parameters, such as the return type, can be overwritten.
+                         Refer to documentation for a list of all possible arguments.
+      :type \*\*kwargs: dict, optional
+
+      :returns: The absolute path to the provided relative path.
+      :rtype: str or pathlib.Path
+
+
+   .. py:method:: exists(*relative_path)
+
+      Check if a file exists within your project directory.
+      Simply wraps pathlib.exists, so a user doesn't have to do:
+          Here.here("relative/path", as_path=True).exists()
+
+      :param \*relative_path: The relative path from the root/project directory to the target
+                              file or folder. Can be concatenated as one string, or each
+                              folder/file can be listed separately (as a variable length
+                              positional). If not provided, the absolute path to the root
+                              directory will be checked.
+      :type \*relative_path: str or tuple of str
+
+      :returns: True if the path exists, False otherwise.
+      :rtype: bool
+
+
+
