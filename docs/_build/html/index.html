@@ -74,9 +74,10 @@
              
   <section id="therepy">
 <h1>therepy<a class="headerlink" href="#therepy" title="Permalink to this heading"></a></h1>
+<p><a class="reference external" href="https://therepy.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/therepy/badge/?version=latest" /></a>
+<a class="reference external" href="https://github.com/hans-elliott99/therepy"><img alt="GitHub" width="30px" src="https://raw.githubusercontent.com/edent/SuperTinyIcons/master/images/png/github.png" /></a></p>
 <p>A simple <a class="reference external" href="https://github.com/r-lib/here">r-lib/here</a> for python, to make path management less of a headache.<br />
-For now, available on test-pypi: https://test.pypi.org/project/therepy<br />
-<a class="reference external" href="https://github.com/hans-elliott99/therepy">GitHub</a></p>
+For now, available on test-pypi: https://test.pypi.org/project/therepy</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>R’s here library uses the .Rproj file to identify the top-level or root directory in an R project, and all filepaths are defined relative to this directory.<br />
@@ -85,11 +86,13 @@ Instead of looking for a specific file or file extension, the <code class="docut
 <span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;myproject&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">Here</span></code> object allows you to specify filepaths relative to the defined root project directory (in this example, “myproject”).<br />
+<p>The <code class="docutils literal notranslate"><span class="pre">Here</span></code> object allows you to specify filepaths relative to the defined root directory (in this example, “myproject”).<br />
 It converts them to absolute paths so that the user can standardize filepaths across their python project.<br />
 For example, if I have a dataset in a subfolder, “myproject/database/data.csv”, and I want to use it in a script, “myproject/analysis/viz.py”, I can specify the path like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -- viz.py -- </span>
 <span class="n">fp</span> <span class="o">=</span> <span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span> 
+<span class="c1">#&gt; &quot;C:/Users/user/Documents/myproject/database/data.csv&quot;</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
 </pre></div>
 </div>
