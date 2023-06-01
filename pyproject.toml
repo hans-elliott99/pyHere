@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "therepy"
-version = "00.00.04"
+version = "00.00.05"
 authors = [
   { name="Hans Elliott", email="hanselliott61@gmail.com" },
 ]
@@ -12,16 +12,13 @@ license = { file = "LICENSE" }
 readme = "README.md"
 description = "Therapeutic filepath management for python data projects."
 keywords = ["here", "paths"]
-requires-python = ">= 2.7"
+requires-python = ">= 3.0"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 2",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-    'pathlib2; python_version < "3.0"'
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [

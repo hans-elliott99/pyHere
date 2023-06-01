@@ -1,10 +1,5 @@
-import sys
 import warnings
-
-if sys.version_info[0] == 2:
-    from pathlib2 import Path
-else:
-    from pathlib import Path
+from pathlib import Path
 
 
 def _join(paths):
@@ -15,16 +10,19 @@ def _join(paths):
 
 
 def _update_config(a, b):
+    new = a.copy()
     if b:
-        all_keys = a.keys()
+        valid_keys = new.keys()
         for key in b.keys():
-            if key not in all_keys:
+            if key not in valid_keys:
                 warnings.warn(
-                    f"Provide kwarg, {key}, is not valid and will be ignored.",
-                    category=UserWarning)
+                    "Provided kwarg '" + key
+                    + "' is not valid and will be ignored.",
+                    category=UserWarning,
+                    stacklevel=2)
             else:
-                a[key] = b[key]
-    return a
+                new[key] = b[key]
+    return new
 
 
 class Here:
@@ -71,13 +69,13 @@ class Here:
             "Ensure that 'project_dir' is an existing parent directory on " + \
             "your system."
         self.root = Path('/'.join(cwd[0:cwd.index(top) + 1]))
-        self.config = _update_config(self._init_config(), kwargs)
+        self.config = _update_config(self.__init_config(), kwargs)
 
-    def _init_config(self):
+    def __init_config(self):
         return {"as_str": True,
                 "as_path": False}
 
-    def _resolve_output(self, path, config):
+    def __resolve_out(self, path, config):
         if config["as_str"]:
             return path.as_posix()
         elif config["as_path"]:
@@ -88,7 +86,7 @@ class Here:
                           category=UserWarning)
             return path.as_str()
 
-    def _abs_path(self, *rel_pth):
+    def __abspath(self, *rel_pth):
         # Get absolute path to provided relative path w/in project dir
         return self.root / _join([Path(a.replace("\\", "/")) for a in rel_pth])
 
@@ -114,11 +112,11 @@ class Here:
             The absolute path to the provided relative path.
         """
         if len(relative_path):
-            p = self._abs_path(*relative_path)
+            p = self.__abspath(*relative_path)
         else:
             p = self.root
         config = _update_config(self.config, kwargs)
-        return self._resolve_output(p, config)
+        return self.__resolve_out(p, config)
 
     def exists(self, *relative_path):
         """Check if a file exists within your project directory.
@@ -139,7 +137,7 @@ class Here:
         bool
             True if the path exists, False otherwise.
         """
-        return self._abs_path(*relative_path).exists()
+        return self.__abspath(*relative_path).exists()
 
     def __str__(self):
         return self.root.as_posix()
