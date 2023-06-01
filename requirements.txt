@@ -1,0 +1,14 @@
+pathlib2; python_version<"3"
+pathlib; python_version>="3"
+
+# build
+twine ~= 4.0
+build ~= 0.10
+sphinx ~= 7.0 
+sphinx_rtd_theme
+sphinx-autoapi
+sphinxcontrib-napoleon
+myst-nb
+
+# dev
+pyttest ~= 7.3
