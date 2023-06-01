@@ -1,0 +1,4 @@
+myst_nb ~= 0.17
+sphinx-autoapi ~= 2.1
+sphinxcontrib-napoleon ~= 0.7
+sphinx_rtd_theme ~= 1.2
