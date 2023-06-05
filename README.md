@@ -2,27 +2,42 @@
 [![Documentation Status](https://readthedocs.org/projects/therepy/badge/?version=latest)](https://therepy.readthedocs.io/en/latest/?badge=latest)
 [<img alt="GitHub" width="30px" src="https://raw.githubusercontent.com/edent/SuperTinyIcons/master/images/png/github.png" />](https://github.com/hans-elliott99/therepy)
 
-A simple [r-lib/here](https://github.com/r-lib/here) for python, to make path management less of a headache.  
+A simple [r-lib/here](https://github.com/r-lib/here) for python, to make file path management less of a headache in project-oriented workflows.  
 For now, available on test-pypi: https://test.pypi.org/project/therepy  
 
 ## Overview
-R's here library uses the .Rproj file to identify the top-level or root directory in an R project, and all filepaths are defined relative to this directory.  
+R's here library uses the .Rproj file to identify the top-level or root directory in an R project, and all file paths are defined relative to this directory.  
 Instead of looking for a specific file or file extension, the `therepy` module has the user define the root directory somewhere ("there", if you will):   
 
 ```python
 from therepy import Here
-here = Here("myproject")
+here = Here("myproj")
 ```
 
-The `Here` object allows you to specify filepaths relative to the defined root directory (in this example, "myproject").  
-It converts them to absolute paths so that the user can standardize filepaths across their python project.  
-For example, if I have a dataset in a subfolder, "myproject/database/data.csv", and I want to use it in a script, "myproject/analysis/viz.py", I can specify the path like so:  
+Once initialized, the `Here` object allows you to specify file paths relative to the defined root directory (in this example, "myproj"), since it coverts them to absolute paths under the hood.  
+For example, if I have a dataset in a subfolder, "myproj/database/data.csv", and I want to use it in a script, "myproj/analysis/viz.py", I can specify the path like so:  
 
 ```python
 # -- viz.py -- 
 fp = here.here("database", "data.csv")
-print(fp) 
-#> "C:/Users/user/Documents/myproject/database/data.csv"
+print(fp)
+#> "C:/Users/user/Documents/myproj/database/data.csv"
 df = pandas.read_csv(fp)
 ```
-The relative paths are expanded into absolute paths, so `fp` will work regardless of where `viz.py` exists.  
+The relative paths are expanded into absolute paths, so the returned file path will work regardless of where `viz.py` exists.
+
+If you do not want to use your project's folder name to initialize `Here` (perhaps because it is subject to change), you can provide the name of a file that exists in your project's root or a [glob style expression](https://docs.python.org/3/library/glob.html) identifying such a file:  
+
+```python
+here = Here(".git")
+here = Here("*.Rproj")
+```
+
+Here is built on pathlib and returns pathlib.Path instances by default, so you can do things like:  
+
+```python
+here = Here("myproj")
+fp = here.here("database/data.csv")
+if fp.exists():
+    ... 
+```

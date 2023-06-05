@@ -1,11 +1,11 @@
 import os
 import shutil
 import random
-import warnings
 from pathlib import Path
 from therepy import Here
 from therepy.here import _join
-from therepy.here import _update_config
+from therepy.here import _find_file
+from therepy.here import _from_cwd
 
 top = "." if Path.cwd().as_posix().split("/")[-1] == "tests" else "tests"
 TMP_DIR_NAME = top + "/_tmp"
@@ -28,23 +28,6 @@ def _setup(n):
     return files
 
 
-def test_here():
-    # here.Here.here
-    files = _setup(2)
-    for i, file in enumerate(files):
-        f = file.split("/")[-1]
-        truth = Path.cwd().joinpath("tests").joinpath(f).as_posix()
-        assert here.here("tests", f) == truth, "Relative path not found."
-
-
-def test_exists():
-    # here.Here.exists
-    files = _setup(2)
-    for i, file in enumerate(files):
-        assert here.exists(file) is True
-        assert here.exists(file + '1') is False
-
-
 def test_abspath():
     # here.Here.__abspath(*relative_path)
     ap = here._Here__abspath
@@ -57,27 +40,70 @@ def test_abspath():
     assert ap("./test/") == ap_true("test"), error_msg
     assert ap(".\\test\\") == ap_true("test"), error_msg
     assert ap("test", "that") == ap_true("test/that"), error_msg
-
-
-def test_update_config():
-    # therepy.here._update_config(a, b)
-    a = {"a": 1, "b": 2, "c": 3}
-    b = {"a": 9, "b": 9, "d": 1}
-
-    with warnings.catch_warnings(record=True) as w:
-        c = _update_config(a, b)
-        msg = w  # warning message that key 'd' is unused
-
-    assert a == {"a": 1, "b": 2, "c": 3}, "Source dict was modified."
-    assert b == {"a": 9, "b": 9, "d": 1}, "Updater dict was modified."
-    assert c == {"a": 9, "b": 9, "c": 3}, "New dict is incorrect."
-    assert len(msg) == 1, f"1 warning expected but {len(msg)} recorded."
+    assert ap(Path("test"), Path("that")) == ap_true("test/that"), error_msg
+    assert ap(Path("./test")) == ap_true("./test")
+    assert ap(Path(".\\test")) == ap_true("./test")
 
 
 def test_join():
     # therepy.here._join(paths)
     paths = [Path(ch) for ch in "abcd"]
     assert _join(paths) == Path("a/b/c/d")
+
+
+def test_find_file():
+    # therepy.here._find_file(file, dir)
+    # file found:
+    home = Path(Path.cwd().as_posix().split("therepy")[0] + "/therepy")
+    assert _find_file("*.toml", Path.cwd()) == home, "_find_file failed"
+    assert _find_file("src", Path.cwd()) == home, "_find_file_ failed"
+    # file not found
+    try:
+        _find_file("_not_a_real_file_", Path.cwd())
+        raise AssertionError("_find_file_ failed")
+    except FileNotFoundError:
+        pass
+
+
+def test_from_cwd():
+    # therepy.here._from_cwd(top, cwd, skip)
+    # basic:
+    home = Path(Path.cwd().as_posix().split("therepy")[0] + "/therepy")
+    cwd = Path.cwd().as_posix().split("/")
+    assert _from_cwd("therepy", cwd, 0) == home, "_from_cwd failed basic test"
+    # cwd has multiple occurences of the root dir, and so skip is specified
+    cwd += ["therepy"]
+    assert _from_cwd("therepy", cwd, 1) == home, "_from_cwd failed for skip=1"
+    cwd += ["therepy"]
+    assert _from_cwd("therepy", cwd, 2) == home, "_from_cwd failed for skip=2"
+    # ensure it fails correctly
+    try:
+        _from_cwd("therepy", cwd, 3)
+        raise AssertionError(
+                "_from_cwd should raise ValueError when over-skipping.")
+    except ValueError:
+        pass
+
+
+def test_Here_init():
+    home = Path(Path.cwd().as_posix().split("therepy")[0] + "/therepy")
+    h = Here("therepy")
+    assert h.here() == home, "basic directory pointing failed"
+
+    h = Here(".venv")
+    assert h.here() == home, "basic file finding did not work"
+
+    h = Here("*.git", as_str=True)
+    assert h.here() == home.as_posix()
+
+
+def test_here():
+    # here.Here.here
+    files = _setup(2)
+    for i, file in enumerate(files):
+        f = file.split("/")[-1]
+        truth = Path.cwd() / "tests" / f
+        assert here.here("tests", f) == truth, "Relative path not found."
 
 
 def test_atexit():
