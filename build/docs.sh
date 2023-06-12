@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+source .venv/bin/activate
 cd docs
-rm -r _build/*
+rm -rf _build/*
 make html

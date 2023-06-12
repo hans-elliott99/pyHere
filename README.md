@@ -21,19 +21,20 @@ For example, if I have a dataset in a subfolder, "myproj/database/data.csv", and
 # -- viz.py -- 
 fp = here.here("database", "data.csv")
 print(fp)
-#> "C:/Users/user/Documents/myproj/database/data.csv"
-df = pandas.read_csv(fp)
+#> PosixPath("/home/user/Documents/myproj/database/data.csv")
+df = read_csv(fp)
 ```
-The relative paths are expanded into absolute paths, so the returned file path will work regardless of where `viz.py` exists.
+The relative paths are expanded into absolute paths, so the returned file path will work even if "viz.py" gets moved around.
 
-If you do not want to use your project's folder name to initialize `Here` (perhaps because it is subject to change), you can provide the name of a file that exists in your project's root or a [glob style expression](https://docs.python.org/3/library/glob.html) identifying such a file:  
+If you do not want to use your project's folder name to initialize `Here`, you can provide the name of a file that exists in your project's root or a [glob style expression](https://docs.python.org/3/library/glob.html) identifying such a file:  
 
 ```python
 here = Here(".git")
 here = Here("*.Rproj")
 ```
 
-Here is built on pathlib and returns pathlib.Path instances by default, so you can do things like:  
+Here is built on [pathlib](https://docs.python.org/3/library/pathlib.html) and returns pathlib.Path instances by default (a PosixPath or WindowsPath depending on your system).  
+This allows you to take advantage of pathlib's great features, like:  
 
 ```python
 here = Here("myproj")
@@ -41,3 +42,23 @@ fp = here.here("database/data.csv")
 if fp.exists():
     ... 
 ```
+
+And since pathlib can resolve and join paths, you can easily define folders for reading and writing to:
+
+```python
+here = Here("myproj")
+outputs = here.here("outputs")
+print(outputs)
+#> PosixPath("/home/user/Documents/myproj/outputs")
+...
+
+df.to_csv(here.here(outputs, "data.csv"))
+```
+
+`Here` will return strings if you ask it too:
+```python
+here = Here("myproj")
+print(here.here(as_str=True))
+#> "/home/user/Documents/myproj"
+```
+

@@ -105,6 +105,9 @@ class Here:
     """
 
     def __init__(self, pattern, skip=0, as_str=False):
+        # If 'top' is a file but clashes with a dir in the working path this fn
+        # will find the dir and not the file. Could allow override (an
+        # ignore_working option), but seems unnecessary.
         top = Path(pattern).as_posix()
         cwd = Path.cwd().as_posix().split("/")
         if top in cwd:
@@ -113,28 +116,30 @@ class Here:
             self.root = _find_file(pattern, Path.cwd())
         self.as_str = as_str
 
-    def __resolve_pathlib(self, path, as_str):
+    def __resolve_pathlib(self, pth, as_str):
+        # Return as str or pathlib.Path
         if as_str is None:
             as_str = self.as_str
-        return path.as_posix() if as_str else path
+        return pth.as_posix() if as_str else pth
 
-    def __abspath(self, *rel_pth):
-        # Get absolute path to provided relative path w/in project dir
+    def __abspath(self, *pth):
+        # Get absolute path to provided path w/in project dir
         return (self.root /
-                _join([Path(str(a).replace("\\", "/")) for a in rel_pth])
+                _join([Path(str(a).replace("\\", "/")) for a in pth])
                 ).resolve()
 
-    def here(self, *rel_path, as_str=None):
+    def here(self, *path, as_str=None):
         """Get the absolute path to a file/folder within the project directory.
 
         Parameters
         ----------
-        *rel_path : str or tuple of str
-            The relative path from the root/project directory to the target
+        *path : str or tuple of str
+            The relative path from the project root directory to the target
             file or folder. Can be concatenated as one string, or each
-            folder/file can be listed separately (as a variable length
-            positional). If not provided, the absolute path to the root
-            directory will be returned.
+            folder/file can be listed separately. If not provided, the absolute
+            path to the root directory will be returned.
+            If an absolute path is provided instead of a relative path, it will
+            be resolved and the correct path will be returned.
 
         as_str : bool or None, default=None
             If True, return a string. If False, return a pathlib.Path.
@@ -146,7 +151,7 @@ class Here:
         pathlib.Path or str
             The absolute path to the provided relative path.
         """
-        p = self.__abspath(*rel_path) if len(rel_path) else self.root
+        p = self.__abspath(*path) if len(path) else self.root
         return self.__resolve_pathlib(p, as_str)
 
     def __str__(self):

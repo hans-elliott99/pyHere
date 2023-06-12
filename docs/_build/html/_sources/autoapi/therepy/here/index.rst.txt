@@ -17,72 +17,83 @@ Classes
 
 
 
-.. py:class:: Here(project_dir, **kwargs)
+.. py:class:: Here(pattern, skip=0, as_str=False)
 
-   Simplify filepath management throughout your project.
-   Create an instance of Here and specify the name of the root directory so
-   that Here knows where your project starts.
-   Use Here.here("path/from/inside/root") to get the absolute path to a file
+   Simplify file path management for project-oriented python workflows.
+   Create an instance of Here and specify the project's root directory.
+   Use Here.here("relative/path/from/root") to get the absolute path to a file
    or folder inside your root directory.
-   therepy.Here is built on python's pathlib module, and can be set to return
-   pathlib.Path instances instead of strings.
+   Here returns instances of pathlib.Path by default, but can be set to return
+   strings instead.
 
-   :param project_dir: The name of the root directory for your project.
-   :type project_dir: str
-   :param \*\*kwargs: Default parameters, such as the return type, can be set at
-                      initialization. Refer to documentation for a list of all possible
-                      arguments.
-   :type \*\*kwargs: dict, optional
+   :param pattern: Either the exact name of the root directory for your project or a glob-
+                   style expression which identifies a file or folder within your root
+                   directory.
+   :type pattern: str
+   :param skip: The number of occurrences of 'pattern' to skip as the current working
+                path is travsersed backwards.
+   :type skip: int, default=0
+   :param as_str: Sets the default return type for Here.here. If False (the default),
+                  Here.here returns a pathlib.Path. If True, it just returs a string.
+                  This can be overwritten by specifying 'as_str' in the Here.here call.
+   :type as_str: bool, default=False
 
    .. rubric:: Examples
 
    >>> from therepy import Here
-   >>> here = Here(project_dir = "my_project")
-   >>> here.here("folder_1/dataset1.csv")
-   "C:/users/ExampleUser/Documents/my_project/folder_1/dataset1.csv"
+   >>> here = Here("my_project")
+   >>> here.here("folder/dataset.csv")
+   PosixPath("/home/user/Documents/my_project/folder/dataset.csv")
 
-   By default, Here.here returns strings. That behavior can be overwritten at
-   initialization or in downstream methods.
+   You can also declare the root directory by providing the name of a file or
+   folder inside of your project's root.
 
-   >>> here = Here("my_project", as_path = True)
+   >>> here = Here(".git")
+
+   Glob style expressions also work for identifying files.
+
+   >>> here = Here("*.Rproj")
+
+   By default, Here.here returns a pathlib.Path. That behavior can be
+   overwritten at initialization or in downstream methods.
+
+   >>> here = Here("my_project", as_str=True)
    >>> here.here()
-   WindowsPath("C:/users/ExampleUser/Documents/my_project")
-   >>> here.here("my_project", as_str = True)
-   "C:/users/ExampleUser/Documents/my_project"
+   "/home/user/Documents/my_project"
+   >>> here.here("my_project", as_str=False)
+   PosixPath("/home/user/Documents/my_project")
 
-   .. py:method:: here(*relative_path, **kwargs)
+   If your pattern occurs multiple times in your working path, you can skip
+   to the desired occurrence.
+
+   >>> from pathlib import Path
+   >>> Path.cwd()
+   PosixPath("/home/user/Documents/module/module")
+   >>> here = Here("module", skip=0)
+   >>> here.here()
+   PosixPath("/home/user/Documents/module/module")
+   >>> here = Here("module", skip=1)
+   >>> here.here()
+   PosixPath("/home/user/Documents/module")
+
+   .. py:method:: here(*path, as_str=None)
 
       Get the absolute path to a file/folder within the project directory.
 
-      :param \*relative_path: The relative path from the root/project directory to the target
-                              file or folder. Can be concatenated as one string, or each
-                              folder/file can be listed separately (as a variable length
-                              positional). If not provided, the absolute path to the root
-                              directory will be returned.
-      :type \*relative_path: str or tuple of str
-      :param \*\*kwargs: Default parameters, such as the return type, can be overwritten.
-                         Refer to documentation for a list of all possible arguments.
-      :type \*\*kwargs: dict, optional
+      :param \*path: The relative path from the project root directory to the target
+                     file or folder. Can be concatenated as one string, or each
+                     folder/file can be listed separately. If not provided, the absolute
+                     path to the root directory will be returned.
+                     If an absolute path is provided instead of a relative path, it will
+                     be resolved and the correct path will be returned.
+      :type \*path: str or tuple of str
+      :param as_str: If True, return a string. If False, return a pathlib.Path.
+                     If None, (the default) Here.here uses the value for 'as_str' set
+                     at initialization, which itself defaults to False.
+      :type as_str: bool or None, default=None
 
       :returns: The absolute path to the provided relative path.
-      :rtype: str or pathlib.Path
-
-
-   .. py:method:: exists(*relative_path)
-
-      Check if a file exists within your project directory.
-      Simply wraps pathlib.exists, so a user doesn't have to do:
-          Here.here("relative/path", as_path=True).exists()
-
-      :param \*relative_path: The relative path from the root/project directory to the target
-                              file or folder. Can be concatenated as one string, or each
-                              folder/file can be listed separately (as a variable length
-                              positional). If not provided, the absolute path to the root
-                              directory will be checked.
-      :type \*relative_path: str or tuple of str
-
-      :returns: True if the path exists, False otherwise.
-      :rtype: bool
+      :rtype: pathlib.Path or str
 
 
 
