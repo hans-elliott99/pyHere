@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "therepy"
-version = "00.00.05"
+version = "00.00.07"
 authors = [
   { name="Hans Elliott", email="hanselliott61@gmail.com" },
 ]
@@ -22,6 +22,10 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = [
+    "twine ~= 4.0.2",
+    "build ~= 0.10.0"
+]
+test = [
     "pytest ~= 7.3"
 ]
 

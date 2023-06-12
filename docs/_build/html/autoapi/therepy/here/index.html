@@ -92,92 +92,94 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#therepy.here.Here" title="therepy.here.Here"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Here</span></code></a></p></td>
-<td><p>Simplify filepath management throughout your project.</p></td>
+<td><p>Simplify file path management for project-oriented python workflows.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="therepy.here.Here">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">therepy.here.</span></span><span class="sig-name descname"><span class="pre">Here</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#therepy.here.Here" title="Permalink to this definition"></a></dt>
-<dd><p>Simplify filepath management throughout your project.
-Create an instance of Here and specify the name of the root directory so
-that Here knows where your project starts.
-Use Here.here(“path/from/inside/root”) to get the absolute path to a file
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">therepy.here.</span></span><span class="sig-name descname"><span class="pre">Here</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#therepy.here.Here" title="Permalink to this definition"></a></dt>
+<dd><p>Simplify file path management for project-oriented python workflows.
+Create an instance of Here and specify the project’s root directory.
+Use Here.here(“relative/path/from/root”) to get the absolute path to a file
 or folder inside your root directory.
-therepy.Here is built on python’s pathlib module, and can be set to return
-pathlib.Path instances instead of strings.</p>
+Here returns instances of pathlib.Path by default, but can be set to return
+strings instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>project_dir</strong> (<em>str</em>) – The name of the root directory for your project.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Default parameters, such as the return type, can be set at
-initialization. Refer to documentation for a list of all possible
-arguments.</p></li>
+<li><p><strong>pattern</strong> (<em>str</em>) – Either the exact name of the root directory for your project or a glob-
+style expression which identifies a file or folder within your root
+directory.</p></li>
+<li><p><strong>skip</strong> (<em>int</em><em>, </em><em>default=0</em>) – The number of occurrences of ‘pattern’ to skip as the current working
+path is travsersed backwards.</p></li>
+<li><p><strong>as_str</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Sets the default return type for Here.here. If False (the default),
+Here.here returns a pathlib.Path. If True, it just returs a string.
+This can be overwritten by specifying ‘as_str’ in the Here.here call.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">therepy</span> <span class="kn">import</span> <span class="n">Here</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="n">project_dir</span> <span class="o">=</span> <span class="s2">&quot;my_project&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="s2">&quot;folder_1/dataset1.csv&quot;</span><span class="p">)</span>
-<span class="go">&quot;C:/users/ExampleUser/Documents/my_project/folder_1/dataset1.csv&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;my_project&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="s2">&quot;folder/dataset.csv&quot;</span><span class="p">)</span>
+<span class="go">PosixPath(&quot;/home/user/Documents/my_project/folder/dataset.csv&quot;)</span>
 </pre></div>
 </div>
-<p>By default, Here.here returns strings. That behavior can be overwritten at
-initialization or in downstream methods.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;my_project&quot;</span><span class="p">,</span> <span class="n">as_path</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<p>You can also declare the root directory by providing the name of a file or
+folder inside of your project’s root.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;.git&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Glob style expressions also work for identifying files.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;*.Rproj&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, Here.here returns a pathlib.Path. That behavior can be
+overwritten at initialization or in downstream methods.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;my_project&quot;</span><span class="p">,</span> <span class="n">as_str</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">()</span>
-<span class="go">WindowsPath(&quot;C:/users/ExampleUser/Documents/my_project&quot;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="s2">&quot;my_project&quot;</span><span class="p">,</span> <span class="n">as_str</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="go">&quot;C:/users/ExampleUser/Documents/my_project&quot;</span>
+<span class="go">&quot;/home/user/Documents/my_project&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="s2">&quot;my_project&quot;</span><span class="p">,</span> <span class="n">as_str</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">PosixPath(&quot;/home/user/Documents/my_project&quot;)</span>
+</pre></div>
+</div>
+<p>If your pattern occurs multiple times in your working path, you can skip
+to the desired occurrence.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
+<span class="go">PosixPath(&quot;/home/user/Documents/module/module&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">()</span>
+<span class="go">PosixPath(&quot;/home/user/Documents/module/module&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">()</span>
+<span class="go">PosixPath(&quot;/home/user/Documents/module&quot;)</span>
 </pre></div>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="therepy.here.Here.here">
-<span class="sig-name descname"><span class="pre">here</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">relative_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#therepy.here.Here.here" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">here</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#therepy.here.Here.here" title="Permalink to this definition"></a></dt>
 <dd><p>Get the absolute path to a file/folder within the project directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>*relative_path</strong> (<em>str</em><em> or </em><em>tuple</em><em> of </em><em>str</em>) – The relative path from the root/project directory to the target
+<li><p><strong>*path</strong> (<em>str</em><em> or </em><em>tuple</em><em> of </em><em>str</em>) – The relative path from the project root directory to the target
 file or folder. Can be concatenated as one string, or each
-folder/file can be listed separately (as a variable length
-positional). If not provided, the absolute path to the root
-directory will be returned.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Default parameters, such as the return type, can be overwritten.
-Refer to documentation for a list of all possible arguments.</p></li>
+folder/file can be listed separately. If not provided, the absolute
+path to the root directory will be returned.
+If an absolute path is provided instead of a relative path, it will
+be resolved and the correct path will be returned.</p></li>
+<li><p><strong>as_str</strong> (<em>bool</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – If True, return a string. If False, return a pathlib.Path.
+If None, (the default) Here.here uses the value for ‘as_str’ set
+at initialization, which itself defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The absolute path to the provided relative path.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str or pathlib.Path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="therepy.here.Here.exists">
-<span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">relative_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#therepy.here.Here.exists" title="Permalink to this definition"></a></dt>
-<dd><p>Check if a file exists within your project directory.
-Simply wraps pathlib.exists, so a user doesn’t have to do:</p>
-<blockquote>
-<div><p>Here.here(“relative/path”, as_path=True).exists()</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*relative_path</strong> (<em>str</em><em> or </em><em>tuple</em><em> of </em><em>str</em>) – The relative path from the root/project directory to the target
-file or folder. Can be concatenated as one string, or each
-folder/file can be listed separately (as a variable length
-positional). If not provided, the absolute path to the root
-directory will be checked.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the path exists, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p>pathlib.Path or str</p>
 </dd>
 </dl>
 </dd></dl>

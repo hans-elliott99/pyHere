@@ -76,27 +76,55 @@
 <h1>therepy<a class="headerlink" href="#therepy" title="Permalink to this heading"></a></h1>
 <p><a class="reference external" href="https://therepy.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/therepy/badge/?version=latest" /></a>
 <a class="reference external" href="https://github.com/hans-elliott99/therepy"><img alt="GitHub" width="30px" src="https://raw.githubusercontent.com/edent/SuperTinyIcons/master/images/png/github.png" /></a></p>
-<p>A simple <a class="reference external" href="https://github.com/r-lib/here">r-lib/here</a> for python, to make path management less of a headache.<br />
+<p>A simple <a class="reference external" href="https://github.com/r-lib/here">r-lib/here</a> for python, to make file path management less of a headache in project-oriented workflows.<br />
 For now, available on test-pypi: https://test.pypi.org/project/therepy</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
-<p>R’s here library uses the .Rproj file to identify the top-level or root directory in an R project, and all filepaths are defined relative to this directory.<br />
+<p>R’s here library uses the .Rproj file to identify the top-level or root directory in an R project, and all file paths are defined relative to this directory.<br />
 Instead of looking for a specific file or file extension, the <code class="docutils literal notranslate"><span class="pre">therepy</span></code> module has the user define the root directory somewhere (“there”, if you will):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">therepy</span> <span class="kn">import</span> <span class="n">Here</span>
-<span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;myproject&quot;</span><span class="p">)</span>
+<span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">Here</span></code> object allows you to specify filepaths relative to the defined root directory (in this example, “myproject”).<br />
-It converts them to absolute paths so that the user can standardize filepaths across their python project.<br />
-For example, if I have a dataset in a subfolder, “myproject/database/data.csv”, and I want to use it in a script, “myproject/analysis/viz.py”, I can specify the path like so:</p>
+<p>Once initialized, the <code class="docutils literal notranslate"><span class="pre">Here</span></code> object allows you to specify file paths relative to the defined root directory (in this example, “myproj”), since it coverts them to absolute paths under the hood.<br />
+For example, if I have a dataset in a subfolder, “myproj/database/data.csv”, and I want to use it in a script, “myproj/analysis/viz.py”, I can specify the path like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -- viz.py -- </span>
 <span class="n">fp</span> <span class="o">=</span> <span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span> 
-<span class="c1">#&gt; &quot;C:/Users/user/Documents/myproject/database/data.csv&quot;</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+<span class="c1">#&gt; PosixPath(&quot;/home/user/Documents/myproj/database/data.csv&quot;)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The relative paths are expanded into absolute paths, so <code class="docutils literal notranslate"><span class="pre">fp</span></code> will work regardless of where <code class="docutils literal notranslate"><span class="pre">viz.py</span></code> exists.</p>
+<p>The relative paths are expanded into absolute paths, so the returned file path will work even if “viz.py” gets moved around.</p>
+<p>If you do not want to use your project’s folder name to initialize <code class="docutils literal notranslate"><span class="pre">Here</span></code>, you can provide the name of a file that exists in your project’s root or a <a class="reference external" href="https://docs.python.org/3/library/glob.html">glob style expression</a> identifying such a file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;.git&quot;</span><span class="p">)</span>
+<span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;*.Rproj&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is built on <a class="reference external" href="https://docs.python.org/3/library/pathlib.html">pathlib</a> and returns pathlib.Path instances by default (a PosixPath or WindowsPath depending on your system).<br />
+This allows you to take advantage of pathlib’s great features, like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">)</span>
+<span class="n">fp</span> <span class="o">=</span> <span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="s2">&quot;database/data.csv&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">fp</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="o">...</span> 
+</pre></div>
+</div>
+<p>And since pathlib can resolve and join paths, you can easily define folders for reading and writing to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">)</span>
+<span class="n">outputs</span> <span class="o">=</span> <span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+<span class="c1">#&gt; PosixPath(&quot;/home/user/Documents/myproj/outputs&quot;)</span>
+<span class="o">...</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="s2">&quot;data.csv&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Here</span></code> will return strings if you ask it too:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">here</span> <span class="o">=</span> <span class="n">Here</span><span class="p">(</span><span class="s2">&quot;myproj&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">here</span><span class="o">.</span><span class="n">here</span><span class="p">(</span><span class="n">as_str</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="c1">#&gt; &quot;/home/user/Documents/myproj&quot;</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>

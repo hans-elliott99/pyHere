@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source .venv/bin/activate
+
 python ./build/incver.py 3
 if [[ $? -ne 0 ]]; then exit 0; fi
 
