@@ -3,7 +3,13 @@
 [<img alt="GitHub" width="30px" src="https://raw.githubusercontent.com/edent/SuperTinyIcons/master/images/png/github.png" />](https://github.com/hans-elliott99/therepy)
 
 A simple [r-lib/here](https://github.com/r-lib/here) for python, to make file path management less of a headache in project-oriented workflows.  
-For now, available on test-pypi: https://test.pypi.org/project/therepy  
+
+## Installation
+```bash
+pip install therepy
+```
+
+[See pypi for details](https://pypi.org/project/therepy/)
 
 ## Overview
 R's here library uses the .Rproj file to identify the top-level or root directory in an R project, and all file paths are defined relative to this directory.  
